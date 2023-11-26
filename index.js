@@ -201,6 +201,18 @@ function fakeNatty(){
     let startLine = 0
     let endLine = string.indexOf('\n', startLine)
     let lineValue = string.substring(startLine, endLine)
+    let winnersGeral = []
+
+    function skipLine(value,start,end){
+        if(end === -1){
+            value = string.substring(start)
+        }else{
+            value = string.substring(start, end)
+        }
+
+        start = end+5
+        end = string.indexOf('\n', start+1)
+    }
     
     for(let i = 0; i < 8; i++){
 
@@ -212,6 +224,7 @@ function fakeNatty(){
 
         startLine = endLine+5
         endLine = string.indexOf('\n', startLine+1)
+        // skipLine(lineValue, startLine, endLine)
 
         let validateInfo = lineValue.split(' ')
 
@@ -278,35 +291,81 @@ function fakeNatty(){
         }
     }
 
-    let ganhadoresGeral = []
     for(let i = 0; i < campeonatos.length; i++){
 
-        let ganhadoresSistemas = []
+        let pontuaçõesEmPremios = []
 
-        for(let j = 0; j < campeonatos[i].sistemasDePontuação.length; j++){
-            let ganhadorSistema = []
-            let pontuacoesPilotos = []
-            // piloto 1 ficou em 3º e ganhou 2 pontos
-            for(let k = 0; k< campeonatos[i].premios.length; k++){ 
-                for(let l = 0; l< campeonatos[i].premios.length; l++){ 
-                    console.log(campeonatos[i].premios[k][l])
+        for(let k = 0; k< campeonatos[i].premios.length; k++){ 
+            
+            let pontuacaoEmPremios = []
+
+            campeonatos[i].sistemasDePontuação.forEach((sistema, index) =>{
+
+                let pontuaçãoSistema = []
+
+                for(let l = 0; l< campeonatos[i].premios[k].length; l++){
+
+                    let indexPontuação = campeonatos[i].premios[k][l]
+          
+                    let pontuaçãoIndividual = sistema[indexPontuação]
                     
-                    let indexPontuaçãoIndividual = campeonatos[i].sistemasDePontuação.indexOf(campeonatos[i].premios[k][l])
+                    if(!pontuaçãoIndividual){
+                        pontuaçãoIndividual = "0"
+                    }
     
-                    pontuacoesPilotos.push(campeonatos[i].sistemasDePontuação[indexPontuaçãoIndividual])
+                    pontuaçãoSistema.push(pontuaçãoIndividual)
+    
                 }
-            }
-            console.log(pontuacoesPilotos)
-            ganhadoresSistemas.push(ganhadorSistema)
+
+                pontuacaoEmPremios.push(pontuaçãoSistema)
+            })
+
+            pontuaçõesEmPremios.push(pontuacaoEmPremios)
         }
 
-        ganhadoresGeral.push(ganhadoresSistemas)
-    
+        let pilotoGeral = []
+
+        for(let p = 0; p < campeonatos[i].pilotos; p++){
+            campeonatos[i].sistemasDePontuação.map((elemSistema,indexSistemas) => {
+
+                let pilotoSistema = []
+
+                if(pilotoGeral[indexSistemas] === undefined){
+                    pilotoGeral[indexSistemas] = []
+                }
+
+                pontuaçõesEmPremios.forEach((elemPremios,indexPremios) => {
+                    const result =  elemPremios[indexSistemas][p]
+                    pilotoSistema.push(result)
+        
+                })
+                pilotoSistema = pilotoSistema.reduce((accumulator,value) => parseInt(accumulator) + parseInt(value),0);
+                pilotoGeral[indexSistemas] = [...pilotoGeral[indexSistemas], pilotoSistema ]
+            })
+        }
+
+
+        pilotoGeral.map(elem => {
+
+            const max = Math.max(...elem)
+
+            const winners = []
+
+            for(number of elem){
+                if(number === max){
+                    const indexCondition = winners.length !== 0 ? winners[winners.length-1] : 0
+                    const winner = elem.indexOf(max, indexCondition) + 1
+                    winners.push(winner)
+                }
+            }
+
+            winnersGeral.push(winners.join(' '))
+        })
     }
-    return campeonatos
+    return winnersGeral.join('\n')
 }
 
-// console.log(izi())
-// console.log(natty())
+console.log(izi())
+console.log(natty())
 console.log(fakeNatty())
 
